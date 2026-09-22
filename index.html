@@ -102,20 +102,65 @@
     깃 · 깃허브 특강 팀 프로젝트
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
-  <script>
-    // 현준이 추천한 anime.js로 카드 등장 애니메이션을 줘봤어요.
-    // 라이브러리가 안 불러와져도 카드는 CSS만으로 원래 보이니 안전합니다.
-    if (window.anime) {
-      var cards = document.querySelectorAll('.card');
-      anime.set(cards, { opacity: 0, translateY: 22 });
-      anime({
-        targets: cards,
-        opacity: 1,
-        translateY: 0,
-        easing: 'easeOutQuad',
-        duration: 600,
-        delay: anime.stagger(70, { start: 150 })
+  <script type="module">
+    // 현준이 추천한 anime.js(v4)로 카드에 인터랙션을 줘봤어요.
+    // ① 스크롤로 카드가 보일 때 그리드 중심에서 바깥으로 퍼지듯 등장 (onScroll + stagger)
+    // ② 카드에 마우스를 올리면 커서를 따라 살짝 기울고 스포트라이트가 비침
+    // 실제 값 애니메이션은 CSS transition이 담당하고, anime.js는 "언제/얼마나 늦게"만 계산합니다.
+    // CDN이 막히거나 스크립트가 실패해도 카드는 CSS만으로 원래 보이니 안전합니다.
+    import { stagger, onScroll } from 'https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm';
+
+    const grid = document.querySelector('.card-grid');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (grid && cards.length && !reduceMotion) {
+      cards.forEach((card) => card.classList.add('js-hidden'));
+
+      const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length || 1;
+      const rows = Math.ceil(cards.length / cols);
+      const delayFor = stagger(90, { grid: [cols, rows], from: 'center' });
+
+      cards.forEach((card, i) => {
+        onScroll({
+          target: card,
+          repeat: false,
+          onEnter: () => {
+            setTimeout(() => card.classList.remove('js-hidden'), delayFor(card, i, cards.length));
+          },
+        });
+      });
+    }
+
+    const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (canHover && !reduceMotion) {
+      cards.forEach((card) => {
+        if (card.classList.contains('card-empty')) return;
+
+        const setTilt = (e) => {
+          const rect = card.getBoundingClientRect();
+          const px = (e.clientX - rect.left) / rect.width;
+          const py = (e.clientY - rect.top) / rect.height;
+          card.style.setProperty('--rx', ((0.5 - py) * 10).toFixed(2) + 'deg');
+          card.style.setProperty('--ry', ((px - 0.5) * 12).toFixed(2) + 'deg');
+          card.style.setProperty('--mx', (px * 100).toFixed(1) + '%');
+          card.style.setProperty('--my', (py * 100).toFixed(1) + '%');
+        };
+
+        card.addEventListener('mouseenter', (e) => {
+          card.classList.add('card--tracking');
+          card.style.setProperty('--ty', '-8px');
+          card.style.setProperty('--scale', '1.015');
+          setTilt(e);
+        });
+        card.addEventListener('mousemove', setTilt);
+        card.addEventListener('mouseleave', () => {
+          card.classList.remove('card--tracking');
+          card.style.setProperty('--rx', '0deg');
+          card.style.setProperty('--ry', '0deg');
+          card.style.setProperty('--ty', '0px');
+          card.style.setProperty('--scale', '1');
+        });
       });
     }
   </script>
