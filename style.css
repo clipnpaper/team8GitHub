@@ -133,17 +133,54 @@ a { color: inherit; text-decoration: none; }
 }
 
 .card {
+  position: relative;
+  --ty: 0px;    /* 등장/호버 시 위아래 이동 (JS가 갱신) */
+  --scale: 1;   /* 등장/호버 시 크기 (JS가 갱신) */
+  --rx: 0deg;   /* 마우스 틸트 X축 (JS가 갱신) */
+  --ry: 0deg;   /* 마우스 틸트 Y축 (JS가 갱신) */
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-card);
-  transition: transform 0.28s cubic-bezier(.2,.8,.2,1), box-shadow 0.28s ease, border-color 0.28s ease;
+  transform: perspective(900px) translateY(var(--ty)) scale(var(--scale)) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.5s cubic-bezier(.22,1,.36,1), box-shadow 0.28s ease,
+              border-color 0.28s ease, opacity 0.5s ease;
+}
+
+/* 스크롤 등장 전 상태 — JS가 붙였다 뗀다. JS가 안 돌아도 기본 상태는 그냥 보임(안전장치) */
+.card.js-hidden {
+  opacity: 0;
+  --ty: 26px;
+  --scale: 0.94;
+  transition: none;
+}
+
+/* 마우스를 움직이는 동안만 트랜지션을 빠르게 — 손 떼면 다시 스프링처럼 천천히 복귀 */
+.card.card--tracking {
+  transition: transform 60ms linear, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+/* 커서를 따라다니는 스포트라이트 */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.55), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+.card:not(.card-empty):hover::before {
+  opacity: 1;
 }
 
 .card:hover {
-  transform: translateY(-8px) scale(1.015);
   box-shadow: var(--shadow-card-hover);
   border-color: rgba(109, 91, 255, 0.35);
 }
@@ -213,11 +250,11 @@ a { color: inherit; text-decoration: none; }
   color: #9aa5a0;
   text-align: center;
   padding: 24px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, opacity 0.5s ease,
+              transform 0.5s cubic-bezier(.22,1,.36,1);
 }
 
 .card-empty:hover {
-  transform: none;
   box-shadow: none;
   border-color: var(--accent-a);
   background: rgba(109, 91, 255, 0.05);
@@ -369,5 +406,5 @@ a { color: inherit; text-decoration: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .hero::before, .hero::after { animation: none; }
-  .card { transition: none; }
+  .card, .card-empty { transition: none; }
 }
