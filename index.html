@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>재밌는 사이트 모음</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -46,6 +49,36 @@
         </li>
 
 
+            <!-- ▼▼▼▼▼ 카드 하나 시작 — 이 블록을 복사해서 쓰세요 ▼▼▼▼▼ -->
+      <li class="card">
+        <a class="card-link" href="sites/DG_recommand.html">
+          <span class="card-thumb" style="--thumb:#1c1c1e">🎛️</span>
+          <span class="card-body">
+            <strong class="card-title">Raphael Segerman</strong>
+            <span class="card-summary">
+              모션과 인터랙션에 집중한 고성능 웹 경험을 만드는 크리에이티브 웹사이트 모음
+            </span>
+            <span class="card-meta">추천 · 노동균</span>
+          </span>
+        </a>
+      </li>
+      <!-- ▲▲▲▲▲ 카드 하나 끝 ▲▲▲▲▲ -->
+       
+      <!-- ▼▼▼▼▼ 카드 하나 시작 — 이 블록을 복사해서 쓰세요 ▼▼▼▼▼ -->
+      <li class="card">
+        <a class="card-link" href="sites/neal-fun.html">
+          <span class="card-thumb" style="--thumb:#ffe4c2">🎥</span>
+          <span class="card-body">
+            <strong class="card-title">anime.js</strong>
+            <span class="card-summary">
+              프론트엔드에 겁나 멋지게 보이는 개쩌는 애니메이션 웹사이트
+            </span>
+            <span class="card-meta">추천 · 김현준</span>
+          </span>
+        </a>
+      </li>
+      <!-- ▲▲▲▲▲ 카드 하나 끝 ▲▲▲▲▲ -->
+
       <li class="card card-empty">
         <span>
           <span class="plus">＋</span>
@@ -69,5 +102,22 @@
     깃 · 깃허브 특강 팀 프로젝트
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+  <script>
+    // 현준이 추천한 anime.js로 카드 등장 애니메이션을 줘봤어요.
+    // 라이브러리가 안 불러와져도 카드는 CSS만으로 원래 보이니 안전합니다.
+    if (window.anime) {
+      var cards = document.querySelectorAll('.card');
+      anime.set(cards, { opacity: 0, translateY: 22 });
+      anime({
+        targets: cards,
+        opacity: 1,
+        translateY: 0,
+        easing: 'easeOutQuad',
+        duration: 600,
+        delay: anime.stagger(70, { start: 150 })
+      });
+    }
+  </script>
 </body>
 </html>
